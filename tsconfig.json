@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["es2024"],
+    "module": "ES2022",
+    "target": "es2024",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "include": ["src/**/*"]
+}

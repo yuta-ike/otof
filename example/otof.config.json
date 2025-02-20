@@ -1,0 +1,8 @@
+{
+  "openapi": "./openapi.yml",
+  "output": "./src/generated",
+  "tsconfig": "./tsconfig.json",
+  "hook": {
+    "after": "pnpm exec prettier --write src/generated/**/*.ts"
+  }
+}

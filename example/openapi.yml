@@ -1,0 +1,203 @@
+openapi: 3.0.0
+info:
+  title: TodoApp
+  version: 0.0.0
+tags: []
+paths:
+  /todo:
+    get:
+      operationId: getTasks
+      description: タスクの一覧を取得する。statusやlimitを指定することで、フィルターが可能。
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Status"
+          explode: false
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          explode: false
+      responses:
+        "200":
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  anyOf:
+                    - $ref: "#/components/schemas/TodoTask"
+                    - $ref: "#/components/schemas/DoingTask"
+                    - $ref: "#/components/schemas/DoneTask"
+                    - $ref: "#/components/schemas/DeletedTask"
+    post:
+      operationId: createTask
+      description: 新しいタスクを登録する
+      parameters: []
+      responses:
+        "204":
+          description: "There is no content to send for this request, but the headers may be useful. "
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                createdAt:
+                  type: string
+                  format: date-time
+                tag:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - name
+                - description
+                - createdAt
+                - tag
+    delete:
+      operationId: deleteTask
+      parameters: []
+      responses:
+        "204":
+          description: "There is no content to send for this request, but the headers may be useful. "
+  /todo/{id}:
+    get:
+      operationId: getTask
+      description: タスクの詳細情報を取得する。タスクが存在しない場合は404が返却される
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/TodoTask"
+                  - $ref: "#/components/schemas/DoingTask"
+                  - $ref: "#/components/schemas/DoneTask"
+                  - $ref: "#/components/schemas/DeletedTask"
+components:
+  schemas:
+    DeletedTask:
+      type: object
+      required:
+        - id
+        - name
+        - createdBy
+        - status
+        - deletedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/uuid"
+        name:
+          type: string
+        createdBy:
+          $ref: "#/components/schemas/User"
+        status:
+          type: string
+          enum:
+            - Deleted
+        deletedAt:
+          type: string
+          format: date-time
+    DoingTask:
+      type: object
+      required:
+        - id
+        - name
+        - createdBy
+        - status
+        - startedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/uuid"
+        name:
+          type: string
+        createdBy:
+          $ref: "#/components/schemas/User"
+        status:
+          type: string
+          enum:
+            - Doing
+        startedAt:
+          type: string
+          format: date-time
+    DoneTask:
+      type: object
+      required:
+        - id
+        - name
+        - createdBy
+        - status
+        - startedAt
+        - doneAt
+      properties:
+        id:
+          $ref: "#/components/schemas/uuid"
+        name:
+          type: string
+        createdBy:
+          $ref: "#/components/schemas/User"
+        status:
+          type: string
+          enum:
+            - Done
+        startedAt:
+          type: string
+          format: date-time
+        doneAt:
+          type: string
+          format: date-time
+    Status:
+      type: string
+      enum:
+        - Todo
+        - Doing
+        - Done
+        - Deleted
+    TodoTask:
+      type: object
+      required:
+        - id
+        - name
+        - createdBy
+        - status
+      properties:
+        id:
+          $ref: "#/components/schemas/uuid"
+        name:
+          type: string
+        createdBy:
+          $ref: "#/components/schemas/User"
+        status:
+          type: string
+          enum:
+            - Todo
+    User:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          $ref: "#/components/schemas/uuid"
+        name:
+          type: string
+    uuid:
+      type: string
+      format: uuid
